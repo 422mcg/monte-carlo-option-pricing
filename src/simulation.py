@@ -1,23 +1,7 @@
 # import modules
 import math
 import random
-
-
-# generate random normal values
-def pseudo_norm():
-    """
-    According to the Central Limit Theorem a normalised summation of
-    independent random variables will approach a normal distribution.
-    The simplest demonstration of this is adding two dice together.
-    Args:
-        None
-    Returns:
-        (int):
-    Generate a value between 1-100 in a normal distribution
-    """
-    count = 10
-    values = sum([random.randint(1, 100) for x in range(count)])
-    return round(values/count)
+import numpy as np
 
 
 # function to simulate one stock path
@@ -34,8 +18,21 @@ def simulate_path(S0, r, sigma, T, steps):
         S (): simulated stock prices from t = 0-T
     """
     dt = T / steps
-    # generate random normal values
-    Z = pseudo_norm()
-    # apply Geometric Brownian Motion formula
-    S = S0*math.exp((r - 0.5*sigma**2)*dt + sigma*math.sqrt(dt)*Z)
-    return S
+    stock_price = [S0]
+
+    for i in range(steps):
+        # generate random normal values
+        Z = np.random.normal(loc=0.0, scale=1.0, size=None)
+        # apply Geometric Brownian Motion formula
+        S = stock_price[-1]*math.exp((r - 0.5*sigma**2)*dt + sigma*math.sqrt(dt)*Z)
+        # store new stock price
+        stock_price.append(S)
+
+    return stock_price
+
+# test function
+path = simulate_path(100, 0.05, 0.2, 1, 252)
+
+print(len(path))
+print(path[:5])
+print(path[-1])
